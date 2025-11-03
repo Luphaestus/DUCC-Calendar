@@ -2,11 +2,10 @@
 name: Generate Weekly Calendar Image
 
 on:
-  # Manually trigger from the Actions tab
   workflow_dispatch:
-  # Run every Monday at 00:05 UTC (adjust as you like)
+  # Run every Monday at 17:49 UTC
   schedule:
-    - cron: "5 0 * * MON"
+    - cron: "49 17 * * MON"
 
 jobs:
   build:
@@ -28,26 +27,19 @@ jobs:
 
       - name: Run generator script
         run: |
-          # Ensure output directory exists
-          mkdir -p output
-          # Run your script. If it currently saves in the repo root,
-          # you can either move the file or modify the script to save in ./output
           python main.py
          
 
       - name: Commit generated images
         if: success()
         run: |
-          # Configure git identity for Actions
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Add only new or changed PNGs in output/
           git add -f output/*.png
           git add readme.md
 
 
-          # Only commit if there are changes
           if ! git diff --cached --quiet; then
             git commit -m "Add weekly calendar image: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
             git push

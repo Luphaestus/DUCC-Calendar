@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   # Run every Monday at 17:49 UTC
   schedule:
-    - cron: "49 17 * * MON"
+    - cron: "58 17 * * MON" 
 
 jobs:
   build:

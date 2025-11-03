@@ -43,7 +43,8 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Add only new or changed PNGs in output/
-          git add output/*.png
+          git add -f output/*.png
+
 
           # Only commit if there are changes
           if ! git diff --cached --quiet; then

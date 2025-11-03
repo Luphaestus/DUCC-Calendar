@@ -33,9 +33,7 @@ jobs:
           # Run your script. If it currently saves in the repo root,
           # you can either move the file or modify the script to save in ./output
           python main.py
-          # Move generated images into output/ (adjust name if needed)
-          # If your script already writes "duccWeeklyCalendar-*.png", move them:
-          mv duccWeeklyCalendar-*.png output/ || true
+         
 
       - name: Commit generated images
         if: success()

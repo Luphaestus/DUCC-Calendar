@@ -167,8 +167,8 @@ def weekly_calendar(date = None):
 
     img.show()
 
-
-    img.save("duccWeeklyCalendar-" + start_of_week.strftime('%d%m%y') + ".png")
+    os.makedirs("./output", exist_ok=True)
+    img.save("./output/duccWeeklyCalendar-" + start_of_week.strftime('%d%m%y') + ".png")
 
 
 

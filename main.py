@@ -170,11 +170,11 @@ def weekly_calendar(date = None):
     os.makedirs("./output", exist_ok=True)
     img.save("./output/duccWeeklyCalendar-" + start_of_week.strftime('%d%m%y') + ".png")
 
-    with open("readme", "w") as f:
+    with open("readme.md", "w") as f:
         f.seek(0)
         f.write("# DUCC - Week\n\n")
         f.write(f"**Week of {start_of_week.strftime('%d/%m/%Y')}**\n\n")
-        f.write(f"![DUCC CALENDAR](https://github.com/Luphaestus/DUCC-Calendar/edit/main/output/duccWeeklyCalendar-{start_of_week.strftime('%d%m%y')}.png)")
+        f.write(f"![DUCC CALENDAR](output/duccWeeklyCalendar-{start_of_week.strftime('%d%m%y')}.png)")
         f.truncate()
 
 

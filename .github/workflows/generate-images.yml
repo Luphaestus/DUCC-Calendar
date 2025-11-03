@@ -44,7 +44,7 @@ jobs:
 
           # Add only new or changed PNGs in output/
           git add -f output/*.png
-          git add readme
+          git add readme.md
 
 
           # Only commit if there are changes

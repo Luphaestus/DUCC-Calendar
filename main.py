@@ -8,6 +8,7 @@ import requests
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
 import re
+from collections import Counter
 
 
 class ducc_event:
@@ -213,7 +214,11 @@ def weekly_calendar(calendar_date = None, whole_website=False):
         os.makedirs("./output", exist_ok=True)
         img.save("./output/duccWeeklyCalendar-" + start_of_week.strftime('%d%m%y') + ".png")
 
-        title = "# DUCC - Calendar\n\n"
+        title = """# DUCC - Calendar
+
+> **Info:** This calendar shows upcoming and past DUCC events. See DUCC stats [here](stats.md).
+
+"""
         entry = """
 ## **Week of """ + start_of_week.strftime('%d/%m/%Y') + """**
 
@@ -250,6 +255,8 @@ def weekly_calendar(calendar_date = None, whole_website=False):
                 pbar.update(1)
     else:
         create_image(calendar_date)
+
+
 
 with open("readme.md", "r") as f:
     readme = f.read()

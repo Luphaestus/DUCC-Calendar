@@ -1,5 +1,7 @@
 # DUCC - Calendar
 
+> **Info:** This calendar shows upcoming and past DUCC events. See DUCC stats [here](stats.md).
+
 
 ## **Week of 03/11/2025**
 

@@ -7,6 +7,7 @@ from urllib import response
 import requests
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
+import re
 
 
 class ducc_event:
@@ -17,8 +18,6 @@ class ducc_event:
     def print_event(self):
         print(f"Title: {self.title}")
         print(f"Date: {self.date}")
-
-
 
 
 class website:
@@ -139,6 +138,7 @@ def weekly_calendar(calendar_date = None, whole_website=False):
 
         for event in current_events:
             event.title = event.title.replace("Monday", "").replace("Tuesday", "").replace("Wednesday", "").replace("Thursday", "").replace("Friday", "").replace("Saturday", "").replace("Sunday", "")
+            event.title = re.sub(r'\b\d{1,2}(?:[:.]\d{2})?\s*(?:am|pm|AM|PM)?\b', '', event.title).strip()
             if "chill paddle" in event.title.lower():
                 if not chill1:
                     chill1 = event

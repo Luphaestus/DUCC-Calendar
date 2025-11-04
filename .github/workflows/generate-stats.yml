@@ -1,11 +1,11 @@
-# .github/workflows/generate-images.yml
-name: Generate Weekly Calendar Image
+# .github/workflows/generate-stats.yml
+name: Generate Monthly Stats Image
 
 on:
   workflow_dispatch:
   # Run every Sunday at 12:00 UTC
   schedule:
-    - cron: "0 12 * * SUN"
+    - cron: "0 12 1 * *"
 
 jobs:
   build:
@@ -27,7 +27,7 @@ jobs:
 
       - name: Run generator script
         run: |
-          python main.py
+          python stats.py
          
 
       - name: Commit generated images
@@ -41,8 +41,10 @@ jobs:
 
 
           if ! git diff --cached --quiet; then
-            git commit -m "Add weekly calendar image: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            git commit -m "Add monthly stats image: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
             git push
           else
             echo "No changes to commit."
           fi
+
+          

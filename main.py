@@ -251,5 +251,11 @@ def weekly_calendar(calendar_date = None, whole_website=False):
     else:
         create_image(calendar_date)
 
+with open("readme.md", "r") as f:
+    readme = f.read()
+
+if "15/10/2012" not in readme:
+    weekly_calendar(whole_website=True)
+        
 weekly_calendar()
 

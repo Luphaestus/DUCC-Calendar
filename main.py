@@ -170,12 +170,26 @@ def weekly_calendar(date = None):
     os.makedirs("./output", exist_ok=True)
     img.save("./output/duccWeeklyCalendar-" + start_of_week.strftime('%d%m%y') + ".png")
 
-    with open("readme.md", "w") as f:
-        f.seek(0)
-        f.write("# DUCC - Week\n\n")
-        f.write(f"**Week of {start_of_week.strftime('%d/%m/%Y')}**\n\n")
-        f.write(f"![DUCC CALENDAR](output/duccWeeklyCalendar-{start_of_week.strftime('%d%m%y')}.png)")
-        f.truncate()
+    title = "# DUCC - Calendar\n\n"
+    entry = """
+## **Week of """ + start_of_week.strftime('%d/%m/%Y') + """**
+
+![DUCC CALENDAR](output/duccWeeklyCalendar-""" + start_of_week.strftime('%d%m%y') + """.png)
+"""
+
+
+    if not os.path.exists("readme.md"):
+        with open("readme.md", "w") as f:
+            f.write(title)
+
+
+    with open("readme.md", "r+") as f:
+        readme_content = f.read()
+        if not start_of_week.strftime('%d/%m/%Y') in readme_content:
+            new_readme = title + entry + readme_content[len(title):]
+            f.seek(0)
+            f.write(new_readme)
+            f.truncate()
 
 
 weekly_calendar()

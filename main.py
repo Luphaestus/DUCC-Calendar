@@ -183,7 +183,7 @@ def weekly_calendar(calendar_date = None, whole_website=False):
             for event in current_events:
                 if event.date.day == day_date.day and event.date.month == day_date.month:
                     if event == chill1 and chill2:
-                        event_texts.append(f"{chillPadelTimes} - Chill Padel")
+                        event_texts.append(f"{chillPadelTimes} - Chill Paddel")
                     else:
                         event_texts.append(f"{event.date.strftime('%H:%M')} - {event.title}")
 

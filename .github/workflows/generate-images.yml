@@ -3,9 +3,9 @@ name: Generate Weekly Calendar Image
 
 on:
   workflow_dispatch:
-  # Run every Monday at 17:49 UTC
+  # Run every Sunday at 12:00 UTC
   schedule:
-    - cron: "58 17 * * MON" 
+    - cron: "0 12 * * SUN"
 
 jobs:
   build:

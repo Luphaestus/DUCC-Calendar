@@ -110,32 +110,34 @@ def weekly_calendar(calendar_date = None, whole_website=False):
             for event in current_events:
                 event.print_event()
         
-
         img = Image.open(template_img)
         I1 = ImageDraw.Draw(img)
 
-        titleFont = ImageFont.truetype('title.ttf', 100)
-        eventFont = ImageFont.truetype('event.ttf', 38)
+        titleFont = ImageFont.truetype('title.ttf', 60)
+        eventFont = ImageFont.truetype('event.ttf', 19)
 
-        date_start = 104
-        date_end = 644  
+
+        date_start = 62
+        date_end = 386
         date_width = date_end - date_start
 
-        event_start = 670
-        event_end = 1710
+        event_start = 402
+        event_end = 1026
         event_width = event_end - event_start
-        event_top = 283
-        event_bottom = 449
+        event_top = 170
+        event_bottom = 269
         event_height = event_bottom - event_top
-        event_text_spacing = 8
-        event_vertical_padding = 10
+        event_text_spacing = 5
+        event_vertical_padding = 6
+
+        title_top = 80
 
         chill1 = None
         chill2 = None
 
         title_text = start_of_week.strftime('%d/%m/%y')
         _, _, line_w, _ = I1.textbbox((0, 0), title_text, font=titleFont)
-        I1.text((img.width / 2 - line_w / 2, 150), title_text, font=titleFont, fill=(0, 0, 0))
+        I1.text((img.width / 2 - line_w / 2, title_top), title_text, font=titleFont, fill=(0, 0, 0))
 
         for event in current_events:
             event.title = event.title.replace("Monday", "").replace("Tuesday", "").replace("Wednesday", "").replace("Thursday", "").replace("Friday", "").replace("Saturday", "").replace("Sunday", "")
@@ -151,10 +153,10 @@ def weekly_calendar(calendar_date = None, whole_website=False):
         
         for i in range(7):
 
-            y_offset = 194 * i
+            y_offset = 116 * i
 
-            I1.rounded_rectangle((date_start, 283 + y_offset, date_end, 449 + y_offset), fill=(0, 74, 171),
-                    width=3, radius=180)
+            I1.rounded_rectangle((date_start, 170 + y_offset, date_end, 270 + y_offset), fill=(0, 74, 171),
+                    width=1.8, radius=108)
 
             day_date = start_of_week + timedelta(days=i)
             day_str = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"][i]
@@ -170,12 +172,12 @@ def weekly_calendar(calendar_date = None, whole_website=False):
             
             _, _, date_text_w, _ = I1.textbbox((0, 0), date_str, font=eventFont)
 
-            I1.text((date_start + (date_width - date_text_w) / 2, 340 + y_offset), date_str, font=eventFont, fill=(245, 245, 245))
+            I1.text((date_start + (date_width - date_text_w) / 2, 204 + y_offset), date_str, font=eventFont, fill=(245, 245, 245))
 
             #---------
 
             I1.rounded_rectangle((event_start, event_top + y_offset, event_end, event_bottom + y_offset), fill=(0, 74, 171),
-                            width=3, radius=180)
+                            width=1.8, radius=108)
             
             event_texts = []
             for event in current_events:

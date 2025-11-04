@@ -38,6 +38,7 @@ jobs:
 
           git add -f output/*.png
           git add readme.md
+          git add stats.md
 
 
           if ! git diff --cached --quiet; then

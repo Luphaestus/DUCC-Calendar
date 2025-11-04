@@ -17,9 +17,10 @@ class ducc_event:
 
 class website:
     url = "https://durhamunicanoe.co.uk/events.php"
+    url2 = "https://durhamunicanoe.co.uk/events.php?past_events=1&page=0"
 
-    def _download_page(self):
-        response = requests.get(self.url)
+    def _download_page(self, url):
+        response = requests.get(url)
         response.raise_for_status()
         return response.text
     
@@ -34,7 +35,7 @@ class website:
         return text[start:end]
     
     def get_events(self):
-        page_content = self._download_page()
+        page_content = self._download_page(self.url) + self._download_page(self.url2)
 
         events = page_content.split('event.php?id=')[1:]
 

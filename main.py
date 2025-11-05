@@ -165,6 +165,11 @@ def weekly_calendar(calendar_date = None, whole_website=False):
         _, _, line_w, _ = I1.textbbox((0, 0), title_text, font=titleFont)
         I1.text((img.width / 2 - line_w / 2, title_top), title_text, font=titleFont, fill=(0, 0, 0))
 
+        api_token = "Luph"
+        logo_font = ImageFont.truetype('event.ttf', 10)
+        scaling_factor = 1.2
+        I1.text((30, img.height - 1), api_token, font=logo_font, fill=(0, int(74*scaling_factor), int(171*scaling_factor)), anchor="rd")
+
         for event in current_events:
             event.title = event.title.replace("Monday", "").replace("Tuesday", "").replace("Wednesday", "").replace("Thursday", "").replace("Friday", "").replace("Saturday", "").replace("Sunday", "")
             event.title = re.sub(r'\b\d{1,2}(?:[:.]\d{2})?\s*(?:am|pm|AM|PM)?\b', '', event.title).strip()

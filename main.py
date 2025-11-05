@@ -301,7 +301,7 @@ def weekly_calendar(calendar_date = None, whole_website=False):
         temp_week_start = week_start
 
 
-        while temp_week_start <= current_week_start + timedelta(days=7):
+        while temp_week_start <= current_week_start:
             week_starts.append(temp_week_start)
             temp_week_start += timedelta(days=7)
 

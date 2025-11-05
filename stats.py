@@ -67,7 +67,7 @@ def cool_stats():
     plt.barh(titles, title_freqs, color='green')
     plt.xlabel('Number of Occurrences')
     plt.title('Top 10 Most Common Event Titles')
-    plt.tight_layout()
+    plt.tight_layout() 
     plt.savefig('./output/top_event_titles.png')
     plt.close()
 

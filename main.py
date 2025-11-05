@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
 import re
 from collections import Counter
+import traceback
 
 
 class ducc_event:
@@ -25,24 +26,42 @@ class website:
     url = "https://durhamunicanoe.co.uk/events.php"
     url2 = "https://durhamunicanoe.co.uk/events.php?past_events=1&page=0"
 
-    def _download_page(self, url):
+    @staticmethod
+    def _download_page(url):
         response = requests.get(url)
         response.raise_for_status()
         return response.text
     
-    def _downloadWholeWebsite(self):
+    @staticmethod
+    def _downloadWholeWebsite():
         url = "https://durhamunicanoe.co.uk/events.php"
 
-        website = self._download_page(url)
+        if hasattr(website, 'websiteContent'):
+            return website.websiteContent
+        website.websiteContent = website._download_page(url)
+
+        import concurrent.futures
+
+        def fetch_page(i):
+            url2 = f"https://durhamunicanoe.co.uk/events.php?past_events=1&page={i}"
+            return website._download_page(url2)
 
         with tqdm(total=52, desc="Downloading pages") as pbar:
-            for i in range(0, 52):
-                url2 = f"https://durhamunicanoe.co.uk/events.php?past_events=1&page={i}"
-                website += self._download_page(url2)
-                pbar.update(1)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                futures = {executor.submit(fetch_page, i): i for i in range(52)}
+                results = [None] * 52
+                for fut in concurrent.futures.as_completed(futures):
+                    i = futures[fut]
+                    try:
+                        results[i] = fut.result()
+                    except Exception as e:
+                        results[i] = ""
+                    pbar.update(1)
+                for page_content in results:
+                    website.websiteContent += page_content
 
-        return website
-    
+        return website.websiteContent
+
     def _text_between(self, text, start_str, end_str):
         start = text.find(start_str)
         if start == -1:
@@ -86,7 +105,14 @@ class website:
         return compiled_events
 
 def weekly_calendar(calendar_date = None, whole_website=False):
-    def create_image(date=None, show=True):
+
+    title = """# DUCC - Calendar
+
+> **Info:** This calendar shows upcoming and past DUCC events. See DUCC stats [here](stats.md).
+
+"""
+
+    def create_image(date=None, whole_website=False):
     
         if not date: date = datetime.now()
         day = (date.day) - ((-1) if date.weekday() == 6 else date.weekday())
@@ -106,7 +132,7 @@ def weekly_calendar(calendar_date = None, whole_website=False):
 
         if not current_events:
             return
-        if show:
+        if not whole_website:
             for event in current_events:
                 event.print_event()
         
@@ -211,33 +237,32 @@ def weekly_calendar(calendar_date = None, whole_website=False):
                     event_text_y += prev_event_text_h + event_text_spacing
                 I1.text((event_text_x, event_text_y), event_text, font=sized_event_font, fill=(245, 245, 245))
 
-        if show: img.show()
+        if not whole_website: img.show()
 
         os.makedirs("./output", exist_ok=True)
         img.save("./output/duccWeeklyCalendar-" + start_of_week.strftime('%d%m%y') + ".png")
 
-        title = """# DUCC - Calendar
-
-> **Info:** This calendar shows upcoming and past DUCC events. See DUCC stats [here](stats.md).
-
-"""
+        
         entry = """
 ## **Week of """ + start_of_week.strftime('%d/%m/%Y') + """**
 
 ![DUCC CALENDAR](output/duccWeeklyCalendar-""" + start_of_week.strftime('%d%m%y') + """.png)
 """
 
-        if not os.path.exists("readme.md"):
-            with open("readme.md", "w") as f:
-                f.write(title)
+        if not whole_website:
+            if not os.path.exists("readme.md"):
+                with open("readme.md", "w") as f:
+                    f.write(title)
 
-        with open("readme.md", "r+") as f:
-            readme_content = f.read()
-            if not start_of_week.strftime('%d/%m/%Y') in readme_content:
-                new_readme = title + entry + readme_content[len(title):]
-                f.seek(0)
-                f.write(new_readme)
-                f.truncate()
+            with open("readme.md", "r+") as f:
+                readme_content = f.read()
+                if not start_of_week.strftime('%d/%m/%Y') in readme_content:
+                    new_readme = title + entry + readme_content[len(title):]
+                    f.seek(0)
+                    f.write(new_readme)
+                    f.truncate()
+        else:
+            return (start_of_week.strftime('%d/%m/%Y'), entry)
 
     template_img = 'duccEmpty.png'
     website_instance = website()
@@ -246,15 +271,51 @@ def weekly_calendar(calendar_date = None, whole_website=False):
     if whole_website:
         start_date = datetime(2012, 10, 9, 17, 0)
         now = datetime.now()
+
+        if now.weekday() == 6:
+            now += timedelta(days=1)
+
         current_week_start = now - timedelta(days=now.weekday())
         week_start = start_date - timedelta(days=start_date.weekday())
 
         total_weeks = ((current_week_start - week_start).days // 7) + 1
+        import concurrent.futures
+
+        new_readme = title
+        entries = {}
+
+        
+        def process_week(week_start):
+            result = create_image(week_start, whole_website=True)
+            if result is not None:
+                date, entry_text = result
+                entries[date] = entry_text
+         
+
+        week_starts = []
+        temp_week_start = week_start
+
+
+        while temp_week_start <= current_week_start + timedelta(days=7):
+            week_starts.append(temp_week_start)
+            temp_week_start += timedelta(days=7)
+
         with tqdm(total=total_weeks, desc="Generating weekly calendars") as pbar:
-            while week_start <= current_week_start:
-                create_image(week_start, False)
-                week_start += timedelta(days=7)
-                pbar.update(1)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                futures = [executor.submit(process_week, ws) for ws in week_starts]
+                for fut in concurrent.futures.as_completed(futures):
+                    try:
+                        fut.result()  
+                    except Exception as e:
+                        print("Worker failed:", e)
+                        tb = traceback.extract_tb(e.__traceback__)
+                        if tb:
+                            print("Error occurred at line:", tb[-1].lineno)
+                    pbar.update(1)
+        for date in sorted(entries.keys(), key=lambda d: datetime.strptime(d, '%d/%m/%Y'), reverse=True):
+            new_readme += entries[date]
+        with open("readme.md", "w") as f:
+            f.write(new_readme)
     else:
         create_image(calendar_date)
 
@@ -265,6 +326,6 @@ with open("readme.md", "r") as f:
 
 if "15/10/2012" not in readme:
     weekly_calendar(whole_website=True)
-        
-weekly_calendar()
+else:  
+    weekly_calendar()
 
